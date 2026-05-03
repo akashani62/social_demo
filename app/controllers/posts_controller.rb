@@ -1,5 +1,7 @@
 class PostsController < ApplicationController
   before_action :set_post, only: %i[ show edit update destroy ]
+  before_action :authenticate_user!, only: %i[ new create edit update destroy ]
+  before_action :require_post_author!, only: %i[ edit update destroy ]
 
   # GET /posts or /posts.json
   def index
@@ -23,6 +25,7 @@ class PostsController < ApplicationController
   # POST /posts or /posts.json
   def create
     @post = Post.new(post_params)
+    @post.user = current_user
 
     respond_to do |format|
       if @post.save
@@ -66,6 +69,12 @@ class PostsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def post_params
-      params.expect(post: [ :user_id, :title, :body ])
+      params.expect(post: [ :title, :body ])
+    end
+
+    def require_post_author!
+      return if @post.user_id == current_user.id
+
+      redirect_to @post, alert: "You can only edit your own posts."
     end
 end

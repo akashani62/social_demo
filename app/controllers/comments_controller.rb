@@ -1,5 +1,7 @@
 class CommentsController < ApplicationController
   before_action :set_comment, only: %i[ show edit update destroy ]
+  before_action :authenticate_user!, only: %i[ new create edit update destroy ]
+  before_action :require_comment_author!, only: %i[ edit update destroy ]
 
   # GET /comments or /comments.json
   def index
@@ -21,7 +23,8 @@ class CommentsController < ApplicationController
 
   # POST /comments or /comments.json
   def create
-    @comment = Comment.new(comment_params)
+    @comment = Comment.new(create_comment_params)
+    @comment.user = current_user
 
     respond_to do |format|
       if @comment.save
@@ -37,7 +40,7 @@ class CommentsController < ApplicationController
   # PATCH/PUT /comments/1 or /comments/1.json
   def update
     respond_to do |format|
-      if @comment.update(comment_params)
+      if @comment.update(update_comment_params)
         format.html { redirect_to @comment.post, notice: "Comment was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @comment }
       else
@@ -65,12 +68,22 @@ class CommentsController < ApplicationController
     end
 
     # Only allow a list of trusted parameters through.
-    def comment_params
-      params.expect(comment: [ :user_id, :post_id, :body ])
+    def create_comment_params
+      params.expect(comment: [ :post_id, :body ])
+    end
+
+    def update_comment_params
+      params.expect(comment: [ :body ])
     end
 
     def prefilled_comment_attrs
       return {} unless params[:comment].is_a?(ActionController::Parameters)
-      params[:comment].permit(:post_id, :user_id).to_h.compact_blank
+      params[:comment].permit(:post_id).to_h.compact_blank
+    end
+
+    def require_comment_author!
+      return if @comment.user_id == current_user.id
+
+      redirect_to @comment.post, alert: "You can only edit your own comments."
     end
 end

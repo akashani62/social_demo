@@ -11,10 +11,9 @@
     </div>
   <% end %>
 
-  <div class="my-5">
-    <%= form.label :user_id, "Who is commenting?" %>
-    <%= form.collection_select :user_id, User.order(:name), :id, :name, { prompt: true }, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full max-w-md", {"border-gray-400 focus:outline-blue-600": comment.errors[:user_id].none?, "border-red-400 focus:outline-red-600": comment.errors[:user_id].any?}] %>
-  </div>
+  <% if current_user %>
+    <p class="text-gray-600 text-sm my-5">Commenting as <strong><%= current_user.name %></strong>.</p>
+  <% end %>
 
   <div class="my-5">
     <%= form.label :post_id, "Post" %>

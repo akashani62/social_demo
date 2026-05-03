@@ -1,10 +1,12 @@
 # Demo data for local exploration (idempotent).
+demo_password = "password123"
+
 alice = User.find_or_initialize_by(email: "alice@example.com")
-alice.assign_attributes(name: "Alice")
+alice.assign_attributes(name: "Alice", password: demo_password, password_confirmation: demo_password)
 alice.save!
 
 bob = User.find_or_initialize_by(email: "bob@example.com")
-bob.assign_attributes(name: "Bob")
+bob.assign_attributes(name: "Bob", password: demo_password, password_confirmation: demo_password)
 bob.save!
 
 post = Post.find_or_initialize_by(title: "Welcome to the demo")

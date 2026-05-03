@@ -23,8 +23,61 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+  <body class="min-h-screen bg-gray-50">
+    <header class="sticky top-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur-md">
+      <nav class="container mx-auto flex min-h-14 flex-wrap items-center justify-between gap-3 px-5 py-2" aria-label="Main">
+        <%= link_to root_path, class: "shrink-0 text-base font-semibold text-gray-900 hover:text-blue-600" do %>
+          Social Demo
+        <% end %>
+        <div class="flex flex-wrap items-center justify-end gap-1 sm:gap-2">
+          <% posts_nav = controller_name == "posts" %>
+          <% comments_nav = controller_name == "comments" %>
+          <% users_nav = controller_name == "users" %>
+          <%= link_to "Posts", posts_path,
+                      class: [
+                        "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                        posts_nav ? "bg-blue-600 text-white" : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                      ].join(" ") %>
+          <%= link_to "Comments", comments_path,
+                      class: [
+                        "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                        comments_nav ? "bg-blue-600 text-white" : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                      ].join(" ") %>
+          <%= link_to "Users", users_path,
+                      class: [
+                        "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                        users_nav ? "bg-blue-600 text-white" : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                      ].join(" ") %>
+          <span class="hidden h-8 w-px bg-gray-200 sm:mx-1 sm:inline-block" aria-hidden="true"></span>
+          <% sessions_nav = controller_name == "sessions" %>
+          <% if current_user %>
+            <span class="hidden text-sm text-gray-600 sm:inline max-w-[10rem] truncate sm:max-w-[14rem]" title="<%= current_user.email %>"><%= current_user.name %></span>
+            <%= button_to "Sign out", sign_out_path, method: :delete,
+                          form_class: "inline",
+                          class: "rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100" %>
+          <% else %>
+            <%= link_to "Sign in", sign_in_path,
+                        class: [
+                          "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                          sessions_nav ? "bg-blue-600 text-white" : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                        ].join(" ") %>
+          <% end %>
+        </div>
+      </nav>
+    </header>
+    <main class="container mx-auto px-5 py-8">
+      <% flash.each do |type, message| %>
+        <% next if message.blank? %>
+        <% banner = case type.to_s
+                     when "notice"
+                       "py-2 px-3 mb-5 font-medium rounded-md inline-block bg-green-50 text-green-600"
+                     when "alert"
+                       "py-2 px-3 mb-5 font-medium rounded-md inline-block bg-red-50 text-red-600"
+                     else
+                       "py-2 px-3 mb-5 font-medium rounded-md inline-block bg-gray-50 text-gray-800"
+                     end %>
+        <%= tag.div message, class: banner, role: (type.to_s == "alert" ? "alert" : "status") %>
+      <% end %>
       <%= yield %>
     </main>
   </body>

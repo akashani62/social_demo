@@ -7,5 +7,7 @@
     <strong class="block font-medium mb-1">Body:</strong>
     <%= comment.body %>
   </div>
-  <%= button_to "Delete comment", comment, method: :delete, form_class: "inline-block mt-2", class: "rounded-md px-3 py-1.5 text-sm text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Delete this comment?" } %>
+  <% if current_user && current_user.id == comment.user_id %>
+    <%= button_to "Delete comment", comment, method: :delete, form_class: "inline-block mt-2", class: "rounded-md px-3 py-1.5 text-sm text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Delete this comment?" } %>
+  <% end %>
 </div>

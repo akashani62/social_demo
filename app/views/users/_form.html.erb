@@ -21,6 +21,16 @@
     <%= form.text_field :email, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": user.errors[:email].none?, "border-red-400 focus:outline-red-600": user.errors[:email].any?}] %>
   </div>
 
+  <div class="my-5">
+    <%= form.label :password, user.persisted? ? "Password (leave blank to keep current)" : "Password" %>
+    <%= form.password_field :password, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full max-w-md", {"border-gray-400 focus:outline-blue-600": user.errors[:password].none?, "border-red-400 focus:outline-red-600": user.errors[:password].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :password_confirmation, "Password confirmation" %>
+    <%= form.password_field :password_confirmation, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full max-w-md", {"border-gray-400 focus:outline-blue-600": user.errors[:password_confirmation].none?, "border-red-400 focus:outline-red-600": user.errors[:password_confirmation].any?}] %>
+  </div>
+
   <div class="inline">
     <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
   </div>
