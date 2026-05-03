@@ -1,0 +1,7 @@
+<%= turbo_stream.remove dom_id(@post) %>
+
+<% if Post.count.zero? %>
+  <%= turbo_stream.replace "posts-empty" do %>
+    <%= render "posts/empty_state", blank: false %>
+  <% end %>
+<% end %>

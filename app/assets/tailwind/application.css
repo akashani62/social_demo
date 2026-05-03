@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+@layer base {
+  turbo-frame {
+    @apply transition-opacity duration-200 ease-out;
+  }
+
+  dialog::backdrop {
+    @apply bg-black/40 backdrop-blur-[1px];
+  }
+}

@@ -40,6 +40,23 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal users(:two).id, Comment.last.user_id
   end
 
+  test "creates comment via turbo stream from modal frame" do
+    sign_in_as(users(:two))
+
+    assert_difference("Comment.count", 1) do
+      post comments_url,
+           params: { comment: { body: "Modal streamed", post_id: @comment.post_id } },
+           headers: {
+             "Accept" => "text/vnd.turbo-stream.html",
+             "Turbo-Frame" => "new_comment_modal"
+           }
+    end
+
+    assert_response :success
+    assert_includes response.media_type, "turbo-stream"
+    assert_match(/turbo-stream/, response.body)
+  end
+
   test "should show comment" do
     get comment_url(@comment)
     assert_response :success

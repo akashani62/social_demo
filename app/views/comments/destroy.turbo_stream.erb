@@ -1,0 +1,7 @@
+<%= turbo_stream.remove dom_id(@comment) %>
+
+<% if @post.comments.reload.none? %>
+  <%= turbo_stream.replace "comments-empty" do %>
+    <%= render "comments/empty_state", blank: false %>
+  <% end %>
+<% end %>

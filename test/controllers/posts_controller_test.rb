@@ -1,6 +1,8 @@
 require "test_helper"
 
 class PostsControllerTest < ActionDispatch::IntegrationTest
+  include ActionView::RecordIdentifier
+
   setup do
     @post = posts(:one)
   end
@@ -38,6 +40,38 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to post_url(Post.last)
     assert_equal users(:one).id, Post.last.user_id
+  end
+
+  test "creates post via turbo stream when inside modal frame" do
+    sign_in_as(users(:one))
+
+    assert_difference("Post.count", 1) do
+      post posts_url,
+           params: { post: { body: "Streamed body", title: "Streamed title" } },
+           headers: {
+             "Accept" => "text/vnd.turbo-stream.html",
+             "Turbo-Frame" => "new_post_modal"
+           }
+    end
+
+    assert_response :success
+    assert_includes response.media_type, "turbo-stream"
+    assert_match(/turbo-stream/, response.body)
+  end
+
+  test "updates post via turbo stream when editing inside frame" do
+    sign_in_as(users(:one))
+
+    patch post_url(@post),
+          params: { post: { title: "Updated inline", body: @post.body } },
+          headers: {
+            "Accept" => "text/vnd.turbo-stream.html",
+            "Turbo-Frame" => dom_id(@post)
+          }
+
+    assert_response :success
+    assert_includes response.media_type, "turbo-stream"
+    assert_equal "Updated inline", @post.reload.title
   end
 
   test "should show post" do

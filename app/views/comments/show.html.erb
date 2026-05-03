@@ -7,7 +7,7 @@
 
   <h1 class="font-bold text-4xl">Showing comment</h1>
 
-  <%= render @comment %>
+  <%= render partial: "comments/comment_row", locals: { comment: @comment } %>
 
   <% if current_user&.id == @comment.user_id %>
     <%= link_to "Edit this comment", edit_comment_path(@comment), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>

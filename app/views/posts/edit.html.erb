@@ -1,10 +1,22 @@
 <% content_for :title, "Editing post" %>
 
-<div class="md:w-2/3 w-full">
-  <h1 class="font-bold text-4xl">Editing post</h1>
-
-  <%= render "form", post: @post %>
-
-  <%= link_to "Show this post", @post, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%= link_to "Back to posts", posts_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-</div>
+<% if turbo_frame_request? %>
+  <%= turbo_frame_tag @post do %>
+    <div class="rounded-xl border border-gray-200/80 bg-white p-5 shadow-sm ring-1 ring-gray-900/5">
+      <h2 class="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">Edit post</h2>
+      <%= render "form", post: @post %>
+      <div class="mt-4">
+        <%= link_to "Cancel", post_path(@post), class: "text-sm font-medium text-gray-600 hover:text-gray-900", data: { turbo_frame: dom_id(@post) } %>
+      </div>
+    </div>
+  <% end %>
+<% else %>
+  <div class="mx-auto max-w-2xl space-y-6">
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900">Editing post</h1>
+    <%= render "form", post: @post %>
+    <div class="flex flex-wrap gap-3">
+      <%= link_to "Show this post", @post, class: "text-sm font-medium text-gray-600 hover:text-gray-900" %>
+      <%= link_to "Back to posts", posts_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900" %>
+    </div>
+  </div>
+<% end %>

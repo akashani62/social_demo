@@ -1,0 +1,10 @@
+<%= turbo_stream.append "comments-list" do %>
+  <%= render partial: "comments/comment_row", locals: { comment: @comment } %>
+<% end %>
+
+<%= turbo_stream.replace "comments-empty" do %>
+  <%= render "comments/empty_state", blank: true %>
+<% end %>
+
+<%= turbo_stream.update "new_comment_modal" do %>
+<% end %>

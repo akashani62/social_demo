@@ -11,6 +11,16 @@ class PostsController < ApplicationController
   # GET /posts/1 or /posts/1.json
   def show
     @comments = @post.comments.includes(:user).order(created_at: :desc)
+
+    respond_to do |format|
+      format.html do
+        if turbo_frame_request?
+          render partial: "posts/post_list_item", locals: { post: @post }
+        else
+          render :show
+        end
+      end
+    end
   end
 
   # GET /posts/new
@@ -29,7 +39,8 @@ class PostsController < ApplicationController
 
     respond_to do |format|
       if @post.save
-        format.html { redirect_to @post, notice: "Post was successfully created." }
+        format.turbo_stream if turbo_frame_request?
+        format.html { redirect_to @post, notice: "Post was successfully created." } unless turbo_frame_request?
         format.json { render :show, status: :created, location: @post }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -42,7 +53,8 @@ class PostsController < ApplicationController
   def update
     respond_to do |format|
       if @post.update(post_params)
-        format.html { redirect_to @post, notice: "Post was successfully updated.", status: :see_other }
+        format.turbo_stream if turbo_frame_request?
+        format.html { redirect_to @post, notice: "Post was successfully updated.", status: :see_other } unless turbo_frame_request?
         format.json { render :show, status: :ok, location: @post }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -56,6 +68,7 @@ class PostsController < ApplicationController
     @post.destroy!
 
     respond_to do |format|
+      format.turbo_stream if turbo_frame_request?
       format.html { redirect_to posts_path, notice: "Post was successfully destroyed.", status: :see_other }
       format.json { head :no_content }
     end

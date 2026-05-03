@@ -1,0 +1,10 @@
+<%= turbo_stream.prepend "posts-list" do %>
+  <%= render partial: "posts/post_list_item", locals: { post: @post } %>
+<% end %>
+
+<%= turbo_stream.replace "posts-empty" do %>
+  <%= render "posts/empty_state", blank: true %>
+<% end %>
+
+<%= turbo_stream.update "new_post_modal" do %>
+<% end %>
