@@ -1,0 +1,11 @@
+<div id="<%= dom_id comment %>" class="w-full sm:w-auto my-5 space-y-5">
+  <div>
+    <strong class="block font-medium mb-1">By:</strong>
+    <%= comment.user&.name.presence || "User ##{comment.user_id}" %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Body:</strong>
+    <%= comment.body %>
+  </div>
+  <%= button_to "Delete comment", comment, method: :delete, form_class: "inline-block mt-2", class: "rounded-md px-3 py-1.5 text-sm text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Delete this comment?" } %>
+</div>
