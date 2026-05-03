@@ -25,7 +25,7 @@
         <div data-controller="modal" data-modal-url-value="<%= new_comment_path(comment: { post_id: @post.id }) %>">
           <button type="button"
                   class="inline-flex rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500"
-                  data-action="modal#open">
+                  data-action="modal#show">
             Add comment
           </button>
           <dialog data-modal-target="dialog" data-action="click->modal#closeOnBackdrop" class="m-4 w-[min(100%,28rem)] max-h-[min(100%,90vh)] overflow-visible rounded-2xl border-0 bg-transparent p-0 shadow-none">
