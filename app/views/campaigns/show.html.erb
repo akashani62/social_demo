@@ -1,0 +1,54 @@
+<% content_for :title, "Campaign ##{@campaign.id}" %>
+
+<%= turbo_stream_from @campaign %>
+
+<div class="mx-auto max-w-4xl space-y-6">
+  <div class="rounded-2xl border border-gray-200/80 bg-white p-6 shadow-sm ring-1 ring-gray-900/5">
+    <p class="text-xs font-semibold uppercase tracking-wide text-indigo-600">Campaign</p>
+    <h1 class="mt-1 text-2xl font-bold tracking-tight text-gray-900">Post sharing campaign #<%= @campaign.id %></h1>
+    <p class="mt-2 text-sm text-gray-600">
+      Post: <%= link_to @campaign.post.title, post_path(@campaign.post), class: "font-medium text-indigo-600 hover:text-indigo-500" %>
+    </p>
+    <p class="mt-1 text-sm text-gray-600">
+      Mode: <span class="font-medium text-gray-900"><%= @campaign.send_mode.humanize %></span>
+      <% if @campaign.scheduled? %>
+        • Scheduled for <span class="font-medium text-gray-900"><%= l(@campaign.scheduled_at, format: :long) %></span>
+      <% end %>
+    </p>
+    <%= render "status_badge", campaign: @campaign %>
+  </div>
+
+  <%= render "stats", campaign: @campaign %>
+
+  <section class="rounded-2xl border border-gray-200/80 bg-white p-6 shadow-sm ring-1 ring-gray-900/5">
+    <h2 class="text-lg font-semibold text-gray-900">Deliveries</h2>
+    <div class="mt-4 overflow-hidden rounded-lg border border-gray-200">
+      <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-2 text-left font-medium text-gray-600">Recipient</th>
+            <th class="px-4 py-2 text-left font-medium text-gray-600">Status</th>
+            <th class="px-4 py-2 text-left font-medium text-gray-600">Sent at</th>
+            <th class="px-4 py-2 text-left font-medium text-gray-600">Error</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 bg-white">
+          <% @campaign.deliveries.includes(:recipient).order(created_at: :asc).each do |delivery| %>
+            <tr>
+              <td class="px-4 py-2 text-gray-900"><%= delivery.recipient.email %></td>
+              <td class="px-4 py-2">
+                <span class="<%= delivery.failed? ? "text-red-700" : delivery.sent? ? "text-green-700" : "text-amber-700" %> font-medium">
+                  <%= delivery.status.humanize %>
+                </span>
+              </td>
+              <td class="px-4 py-2 text-gray-600"><%= delivery.sent_at.present? ? l(delivery.sent_at, format: :short) : "—" %></td>
+              <td class="px-4 py-2 text-gray-600"><%= delivery.error_message.presence || "—" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <%= link_to "Create another campaign", new_campaign_path, class: "inline-flex rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+</div>

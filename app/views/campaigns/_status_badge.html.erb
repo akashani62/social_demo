@@ -1,0 +1,6 @@
+<div id="<%= dom_id(campaign, :status_badge) %>" class="mt-1 text-sm text-gray-600">
+  Status:
+  <span class="font-medium <%= campaign.completed_with_failures? ? "text-red-700" : campaign.completed? ? "text-green-700" : campaign.running? ? "text-indigo-700" : "text-amber-700" %>">
+    <%= campaign.status.humanize %>
+  </span>
+</div>

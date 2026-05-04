@@ -33,6 +33,7 @@
           <% posts_nav = controller_name == "posts" %>
           <% comments_nav = controller_name == "comments" %>
           <% users_nav = controller_name == "users" %>
+          <% campaigns_nav = controller_name == "campaigns" %>
           <%= link_to "Posts", posts_path,
                       class: [
                         "rounded-md px-3 py-2 text-sm font-medium transition-colors",
@@ -48,6 +49,13 @@
                         "rounded-md px-3 py-2 text-sm font-medium transition-colors",
                         users_nav ? "bg-blue-600 text-white" : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                       ].join(" ") %>
+          <% if current_user %>
+            <%= link_to "Campaigns", new_campaign_path,
+                        class: [
+                          "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                          campaigns_nav ? "bg-blue-600 text-white" : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                        ].join(" ") %>
+          <% end %>
           <span class="hidden h-8 w-px bg-gray-200 sm:mx-1 sm:inline-block" aria-hidden="true"></span>
           <% sessions_nav = controller_name == "sessions" %>
           <% if current_user %>

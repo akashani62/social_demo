@@ -27,6 +27,9 @@
           </div>
           <%= form.submit "Share post", class: "inline-flex rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500" %>
         <% end %>
+        <div class="mt-3">
+          <%= link_to "Create sharing campaign", new_campaign_path(post_id: @post.id), class: "text-sm font-semibold text-indigo-600 hover:text-indigo-500" %>
+        </div>
       </div>
     <% end %>
   </article>
