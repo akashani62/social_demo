@@ -1,14 +1,37 @@
 <% content_for :title, "Posts" %>
 
-<div class="w-full max-w-4xl mx-auto space-y-8">
+<div class="w-full max-w-6xl mx-auto space-y-8"
+     data-controller="activity-dashboard"
+     data-action="keydown@window->activity-dashboard#handleKeydown"
+     data-activity-dashboard-default-preview-path-value="">
   <% if notice.present? %>
     <p class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-800" id="notice"><%= notice %></p>
   <% end %>
 
+  <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <article class="group rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md">
+      <p class="text-xs font-semibold uppercase tracking-wide text-indigo-600">Total posts</p>
+      <p class="mt-3 text-3xl font-bold text-gray-900" data-activity-dashboard-target="count" data-value="<%= @total_posts %>">0</p>
+    </article>
+    <article class="group rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50 to-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-600">Created this week</p>
+      <p class="mt-3 text-3xl font-bold text-gray-900" data-activity-dashboard-target="count" data-value="<%= @posts_this_week %>">0</p>
+    </article>
+    <article class="group rounded-2xl border border-amber-100 bg-gradient-to-br from-amber-50 to-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md">
+      <p class="text-xs font-semibold uppercase tracking-wide text-amber-600">Most active author</p>
+      <p class="mt-3 text-lg font-semibold text-gray-900 truncate"><%= @top_author&.name || "No author yet" %></p>
+      <p class="mt-1 text-sm text-gray-500"><%= @top_author ? "#{@top_author.posts.count} posts" : "Add posts to see activity" %></p>
+    </article>
+    <article class="group rounded-2xl border border-fuchsia-100 bg-gradient-to-br from-fuchsia-50 to-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md">
+      <p class="text-xs font-semibold uppercase tracking-wide text-fuchsia-600">Total comments</p>
+      <p class="mt-3 text-3xl font-bold text-gray-900" data-activity-dashboard-target="count" data-value="<%= @total_comments %>">0</p>
+    </article>
+  </section>
+
   <header class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
     <div>
       <h1 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Posts</h1>
-      <p class="mt-1 text-sm text-gray-500">Hotwire-powered list — create inline, edit without leaving the page.</p>
+      <p class="mt-1 text-sm text-gray-500">Hotwire-powered list with activity insights, live filtering, and quick preview.</p>
     </div>
     <% if current_user %>
       <div data-controller="modal" data-modal-url-value="<%= new_post_path %>">
@@ -31,12 +54,77 @@
     <% end %>
   </header>
 
-  <section id="posts" class="space-y-4">
-    <%= render "posts/empty_state", blank: @posts.none? %>
-    <div id="posts-list" class="space-y-4">
-      <% @posts.each do |post| %>
-        <%= render partial: "posts/post_list_item", locals: { post: post } %>
-      <% end %>
+  <section class="grid gap-6 lg:grid-cols-[2fr,1fr]">
+    <div class="space-y-4">
+      <div class="rounded-2xl border border-gray-200/80 bg-white p-4 shadow-sm ring-1 ring-gray-900/5">
+        <div class="flex flex-col gap-3 sm:flex-row">
+          <input type="search"
+                 placeholder="Search title, content, or author"
+                 class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                 data-activity-dashboard-target="searchInput"
+                 data-action="input->activity-dashboard#scheduleFilter">
+          <select class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm sm:max-w-xs focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  data-activity-dashboard-target="authorFilter"
+                  data-action="change->activity-dashboard#filter">
+            <option value="">All authors</option>
+            <% @posts.map { |post| post.user&.name.presence || "User ##{post.user_id}" }.uniq.each do |author_name| %>
+              <option value="<%= author_name %>"><%= author_name %></option>
+            <% end %>
+          </select>
+          <button type="button"
+                  class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                  data-action="activity-dashboard#clearFilters">
+            Clear
+          </button>
+        </div>
+      </div>
+
+      <section id="posts" class="space-y-4">
+        <%= render "posts/empty_state", blank: @posts.none? %>
+        <p class="hidden rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-600"
+           data-activity-dashboard-target="emptyState">
+          No posts match your filters.
+        </p>
+        <div id="posts-list" class="grid gap-4 sm:grid-cols-2">
+          <% @posts.each do |post| %>
+            <%= render partial: "posts/post_list_item", locals: { post: post } %>
+          <% end %>
+        </div>
+      </section>
     </div>
+
+    <aside class="rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm ring-1 ring-gray-900/5">
+      <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500">Activity timeline</h2>
+      <ol class="mt-4 space-y-3">
+        <% @timeline_events.each do |event| %>
+          <li class="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2 text-sm text-gray-700 transition duration-200"
+              data-activity-dashboard-target="timelineItem">
+            <p class="font-medium text-gray-900">
+              <%= event[:actor] %>
+              <span class="text-gray-500 font-normal"><%= event[:kind] == "post" ? "created post" : "commented on" %></span>
+            </p>
+            <p class="truncate"><%= event[:subject] %></p>
+            <p class="mt-1 text-xs text-gray-500"><%= time_ago_in_words(event[:at]) %> ago</p>
+          </li>
+        <% end %>
+      </ol>
+    </aside>
   </section>
+
+  <dialog data-activity-dashboard-target="dialog"
+          data-action="click->activity-dashboard#closeOnBackdrop"
+          class="m-4 w-[min(100%,42rem)] max-h-[min(100%,90vh)] overflow-visible rounded-2xl border-0 bg-transparent p-0 opacity-0 shadow-none transition-opacity duration-200">
+    <div class="max-h-[85vh] overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl ring-1 ring-gray-900/10">
+      <div class="mb-4 flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-gray-900">Post preview</h2>
+        <button type="button"
+                class="rounded-md border border-gray-200 px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                data-action="activity-dashboard#closePreview">
+          Close
+        </button>
+      </div>
+      <%= turbo_frame_tag "post_preview_modal", data: { activity_dashboard_target: "frame" }, class: "block min-h-[1px]" %>
+    </div>
+  </dialog>
+
 </div>

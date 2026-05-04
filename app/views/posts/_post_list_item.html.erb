@@ -1,12 +1,23 @@
 <%= turbo_frame_tag post, class: "block transition-shadow duration-200 ease-out hover:shadow-md" do %>
-  <article class="rounded-xl border border-gray-200/80 bg-white p-5 shadow-sm ring-1 ring-gray-900/5" data-controller="appear">
+  <article class="rounded-xl border border-gray-200/80 bg-white p-5 shadow-sm ring-1 ring-gray-900/5 transition duration-300 hover:-translate-y-1 hover:shadow-lg"
+           data-controller="appear"
+           data-activity-dashboard-target="card"
+           data-post-title="<%= post.title %>"
+           data-post-body="<%= truncate(post.body, length: 220) %>"
+           data-post-author="<%= post.user&.name.presence || "User ##{post.user_id}" %>">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
       <div class="min-w-0 flex-1 space-y-2">
         <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600"><%= post.user&.name.presence || "User ##{post.user_id}" %></p>
         <h2 class="text-lg font-semibold tracking-tight text-gray-900"><%= post.title %></h2>
-        <p class="text-sm leading-relaxed text-gray-600 whitespace-pre-wrap"><%= post.body %></p>
+        <p class="text-sm leading-relaxed text-gray-600 whitespace-pre-wrap"><%= truncate(post.body, length: 240) %></p>
       </div>
       <div class="flex shrink-0 flex-wrap items-center gap-2">
+        <button type="button"
+                class="rounded-md border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-700 hover:bg-indigo-100"
+                data-action="activity-dashboard#openPreview"
+                data-preview-path="<%= post_path(post, preview: 1) %>">
+          Quick preview
+        </button>
         <%= link_to "Open", post_path(post), class: "rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50", data: { turbo_frame: "_top" } %>
         <% if current_user&.id == post.user_id %>
           <%= link_to "Edit", edit_post_path(post), class: "rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50", data: { turbo_frame: dom_id(post) } %>

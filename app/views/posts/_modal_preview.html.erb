@@ -1,0 +1,15 @@
+<article class="space-y-4">
+  <div>
+    <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600"><%= post.user&.name.presence || "User ##{post.user_id}" %></p>
+    <h3 class="mt-1 text-2xl font-bold tracking-tight text-gray-900"><%= post.title %></h3>
+  </div>
+
+  <div class="prose prose-gray max-w-none text-gray-700 whitespace-pre-wrap">
+    <%= post.body %>
+  </div>
+
+  <div class="flex items-center justify-between border-t border-gray-100 pt-4">
+    <p class="text-xs text-gray-500">Published <%= time_ago_in_words(post.created_at) %> ago</p>
+    <%= link_to "Open full post", post_path(post), class: "rounded-md border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50", data: { turbo_frame: "_top" } %>
+  </div>
+</article>
