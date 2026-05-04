@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_03_206000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_04_101000) do
   create_table "comments", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -30,6 +30,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_03_206000) do
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
+  create_table "shares", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "post_id", null: false
+    t.string "recipient_email", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["post_id", "recipient_email"], name: "index_shares_on_post_id_and_recipient_email", unique: true
+    t.index ["post_id"], name: "index_shares_on_post_id"
+    t.index ["user_id"], name: "index_shares_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email"
@@ -42,4 +53,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_03_206000) do
   add_foreign_key "comments", "posts"
   add_foreign_key "comments", "users"
   add_foreign_key "posts", "users"
+  add_foreign_key "shares", "posts"
+  add_foreign_key "shares", "users"
 end

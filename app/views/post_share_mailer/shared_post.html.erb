@@ -1,0 +1,9 @@
+<p><%= @sender.name %> shared a post with you.</p>
+
+<p><strong><%= @post.title %></strong></p>
+
+<p><%= simple_format(@post.body) %></p>
+
+<p>
+  <%= link_to "Read post", post_url(@post) %>
+</p>

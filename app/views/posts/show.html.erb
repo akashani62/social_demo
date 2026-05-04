@@ -16,6 +16,19 @@
         <%= button_to "Delete post", post_path(@post), method: :delete, class: "rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-100", data: { turbo_confirm: "Delete this post?" } %>
       </div>
     <% end %>
+
+    <% if current_user %>
+      <div class="mt-8 border-t border-gray-100 pt-6">
+        <h2 class="text-base font-semibold text-gray-900">Share this post</h2>
+        <%= form_with model: Share.new, url: post_shares_path(@post), local: true, class: "mt-3 flex flex-col gap-3 sm:flex-row sm:items-end" do |form| %>
+          <div class="w-full sm:max-w-sm">
+            <%= form.label :recipient_email, "Recipient email", class: "block text-sm font-medium text-gray-700" %>
+            <%= form.email_field :recipient_email, required: true, class: "mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
+          </div>
+          <%= form.submit "Share post", class: "inline-flex rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500" %>
+        <% end %>
+      </div>
+    <% end %>
   </article>
 
   <section class="rounded-2xl border border-gray-200/80 bg-white p-8 shadow-sm ring-1 ring-gray-900/5" aria-labelledby="comments-heading">

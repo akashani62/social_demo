@@ -4,7 +4,9 @@ Rails.application.routes.draw do
   delete "sign_out", to: "sessions#destroy", as: :sign_out
 
   resources :users
-  resources :posts
+  resources :posts do
+    resources :shares, only: :create
+  end
   resources :comments
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

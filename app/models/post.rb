@@ -1,6 +1,7 @@
 class Post < ApplicationRecord
   belongs_to :user
   has_many :comments, dependent: :destroy
+  has_many :shares, dependent: :destroy
 
   validates :title, :body, presence: true
 
