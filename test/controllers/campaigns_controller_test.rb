@@ -39,8 +39,7 @@ class CampaignsControllerTest < ActionDispatch::IntegrationTest
     other_campaign = Campaign.create!(user: users(:two), post: posts(:two), send_mode: :immediate)
     sign_in_as(@user)
 
-    assert_raises(ActiveRecord::RecordNotFound) do
-      get campaign_url(other_campaign)
-    end
+    get campaign_url(other_campaign)
+    assert_response :not_found
   end
 end
